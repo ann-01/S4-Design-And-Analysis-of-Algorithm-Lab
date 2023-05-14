@@ -1,0 +1,260 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+void removelez(int *arrz,int anz,int elez)
+{
+    int flag2z=0;       //flag2 to check if ele present in array
+    for(int iz=0;iz<anz+1;iz++)   //i<n, an being the actual no of ele as with each iteration one element decreases
+    {
+        if(elez==arrz[iz])
+        {
+           for(int jz=iz;jz<anz;jz++)     //j<n-1
+           {
+               arrz[jz]=arrz[jz+1];
+           }
+           flag2z++;
+           break;
+        }
+       
+    }
+    if (flag2z==0)
+        printf("the element doesn't exist in the array");
+
+}
+int nextz(int *arrz,int anz,int elez,int *fz)
+{
+    int larz=0,tempz,flagz=0;   //flag to initialise value of lar and check if it never gets exe ie no larger no
+    for(int iz=0;iz<anz;iz++)
+    {
+        tempz=arrz[iz];
+        if(arrz[iz]>elez && flagz==0)
+        {
+            larz=arrz[iz];
+            flagz++;
+        }
+        else if(arrz[iz]>elez && arrz[iz]<larz)
+        {
+            larz=arrz[iz];
+        }
+    }
+    if(flagz==0)
+        printf("\nthere is no larger number ");
+    *fz=flagz;
+    return larz;
+}
+void fillrandomz(int *arrz,int nz,int maxz)
+{
+    for(int iz=0;iz<nz;iz++)
+    {
+        arrz[iz]=(rand()%maxz)+1;
+    }
+}
+int main()
+{
+    struct node
+    {
+        int data;
+        struct node *next;
+        struct node *prev;
+    };
+    srand(5);
+    struct node *head=NULL, *tail=NULL, *pos=NULL;
+    int o,entry,s,n=0,lar=0,flag=0;
+    clock_t t,t1;
+    printf("using linked list\nMENU\n1)enter elements into the list\n2)remove an element from the list and display the next largest number\n3)exit\n");
+    pos=head;
+    while(1)
+    {
+        printf("\nenter you choice:");
+        scanf("%d",&o);
+        switch(o)
+        {
+            case 1:
+            {
+                printf("enter the number of elements");
+                scanf("%d",&entry);
+                while(n<entry)
+                {
+                if(head==NULL)
+                {
+                    head=(struct node*) malloc(sizeof(struct node));
+                    head->data=(rand()%100)+1;
+                    head->prev=NULL;
+                    head->next=NULL;
+                    pos=head;
+                    tail=head;
+                    n++;
+                }
+                else
+                {
+                    tail->next=(struct node*)malloc (sizeof(struct node));
+                    tail->next->prev=tail;
+                    tail->next->next=NULL;
+                    tail->next->data=(rand()%100)+1;
+                    tail=tail->next;
+                    pos=tail;
+                    n++;
+                }
+                }
+                printf("the elements in the list are:");
+                pos=head;
+                while(pos!=NULL)
+                {
+                    printf("%d  ",pos->data);
+                    pos=pos->next;
+                }
+                break;
+            }
+            case 2:
+            {
+                printf("enter the element to be removed:");
+                scanf("%d",&entry);
+                struct node*temp;
+                int flag=0;
+                pos=head;
+                t=clock();
+                while(pos!=NULL)
+                {
+                    if(pos->data==entry)
+                    {
+                        flag++;
+                        if (pos==head && head->next==NULL)
+                        {
+                            temp=head;
+                            head=NULL;
+                            temp->next=NULL;
+                            free(temp);
+                            n--;
+                            t=clock()-t;
+                            printf("the element has been removed\n");
+                            printf("the list is empty, ");
+                            double timetaken=((double) t/CLOCKS_PER_SEC);
+                            printf("\nthe time taken to delete element using linked list is %f",timetaken);
+                            break;
+                        }
+                        else if(pos==head)
+                        {
+                            temp=head;
+                            head=head->next;
+                            head->prev=NULL;
+                            temp->next=NULL;
+                            free(temp);
+                            n--;
+                            t=clock()-t;
+                            double timetaken=((double) t/CLOCKS_PER_SEC);
+                            printf("the element has been deleted\n");
+                            printf("\nthe time taken to delete element using linked list is %f",timetaken);
+                            break;
+                        }
+                    else if(pos==tail)
+                        {
+                            flag++;
+                            temp=tail;
+                            tail=tail->prev;
+                            tail->next=NULL;
+                            temp->prev=NULL;
+                            free(temp);
+                            n--;
+                            t=clock()-t;
+                            double timetaken=((double) t/CLOCKS_PER_SEC);
+                            printf("the element has been deleted\n");
+                            printf("\nthe time taken to delete element using linked list is %f",timetaken);
+                            break;
+                        }
+                    else
+                        {
+                            flag++;
+                            temp=pos;
+                            temp->prev->next=temp->next;
+                            temp->next->prev=temp->prev;
+                            temp->prev=NULL;
+                            temp->prev=NULL;
+                            free(temp);
+                            n--;
+                            printf("the element has been deleted\n");
+                            t=clock()-t;
+                            double timetaken=((double) t/CLOCKS_PER_SEC);
+                            printf("\nthe time taken to delete element using linked list is %f",timetaken);
+                            break;
+                        }
+                    }
+                    pos=pos->next;
+                }
+                if(flag==0)
+                {
+                    printf("the element isn't present in the list\n");
+                    break;
+                }
+                int flag1=0;
+                pos=head;
+                t1=clock();
+                while(pos!=NULL)
+                {
+                    if(pos->data>entry &&flag1==0)
+                    {
+                        flag1++;
+                        lar=pos->data;
+                    }
+                    else if(pos->data>entry && pos->data<lar)
+                            lar=pos->data;
+                    pos=pos->next;
+                }
+                if(flag1==0)
+                    printf("there is no larger element present in the list\n");
+                else
+                    printf("the next larger element in the list is %d\n",lar);  
+                t1=clock()-t1;
+                double timetaken1=((double) t1/CLOCKS_PER_SEC);
+                printf("\nthe time taken to find the next larger number using linked list is %f",timetaken1);
+                break;
+            }
+            case 3:
+            {
+                goto label;
+            }
+        }
+    }
+    label:
+    srand(5);
+    clock_t tz,t1z;
+    int iz,nz,elez,sz,anz,fz;
+    char chz;
+    printf("using arrays\n");
+    printf("enter the number of elements in your array:");
+    scanf("%d",&nz);
+    int arrz[nz];
+    fillrandomz(arrz,nz,100);
+    printf("the numbers present in the array are:");
+    for(iz=0;iz<nz;iz++)
+    {
+        printf("%d  ",arrz[iz]);
+    }
+    anz=nz;
+    while(anz>0)
+    {
+        printf("\nenter the element to be removed:");
+        scanf("%d",&elez);
+        anz--;
+        tz=clock();
+        removelez(arrz,anz,elez);
+        tz=clock()-tz;
+        t1z=clock();
+        sz=nextz(arrz,anz,elez,&fz);
+        t1z=clock()-t1z;
+        if(fz>0)
+            printf("the next larger element is %d\n",sz);
+        double timetakenz=((double)tz/CLOCKS_PER_SEC);
+        double timetaken1z=((double)t1z/CLOCKS_PER_SEC);
+        printf("\nthe time taken is to remove an element using arrays is %f seconds",timetakenz);
+        printf("\nthe time taken is to find the next larger integer using arrays is %fseconds",timetaken1z);
+        printf("\ndo you want to continue?y/n:");
+        scanf("%s",&chz);
+        if(chz=='n')
+            exit(0);
+    }
+    if(anz==0)
+            printf("\nthere are no more elements to remove");
+}
+
+
+
